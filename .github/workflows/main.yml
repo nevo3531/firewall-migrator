@@ -1,0 +1,24 @@
+name: Build Windows EXE
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    - name: Install dependencies
+      run: pip install flask flask-cors paramiko cryptography pyinstaller
+    - name: Build EXE
+      run: pyinstaller firewall_migrator.spec --clean --noconfirm
+    - name: Upload EXE
+      uses: actions/upload-artifact@v4
+      with:
+        name: FirewallMigratorPro-Windows
+        path: dist\FirewallMigratorPro.exe
