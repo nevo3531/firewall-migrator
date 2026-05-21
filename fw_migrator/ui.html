@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FireWall Migrator Pro</title>
+<style>
+:root {
+  --bg:      #0b0f1a;
+  --bg2:     #111827;
+  --bg3:     #1a2235;
+  --surface: #1e2d47;
+  --border:  #2c3e57;
+  --border2: #3d5470;
+  --text:    #e2e8f2;
+  --text2:   #8fa3be;
+  --text3:   #4a6280;
+  --accent:  #00d4aa;
+  --accent2: #00b894;
+  --blue:    #4f8ef7;
+  --red:     #ff5252;
+  --yellow:  #ffc107;
+  --green:   #00d4aa;
+  --r:       8px;
+  --rl:      14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,212,170,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,170,.03) 1px,transparent 1px);background-size:44px 44px;pointer-events:none}
+
+/* ── HEADER ── */
+header{position:sticky;top:0;z-index:100;background:rgba(11,15,26,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{display:flex;align-items:center;gap:10px;font-size:17px;font-weight:700;letter-spacing:-.4px}
+.logo-icon{width:34px;height:34px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.logo span{color:var(--accent)}
+.hbadge{font-size:11px;padding:3px 9px;border-radius:20px;border:1px solid var(--blue);color:var(--blue);background:rgba(79,142,247,.08)}
+
+/* ── STEPS BAR ── */
+.steps-bar{display:flex;align-items:center;padding:20px 32px 0;gap:0;margin-bottom:28px}
+.step{display:flex;align-items:center;gap:8px;padding:9px 18px;border-radius:var(--r);cursor:pointer;font-size:13px;font-weight:500;color:var(--text3);background:transparent;border:none;transition:.2s;white-space:nowrap}
+.step .sn{width:24px;height:24px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;background:var(--bg3);flex-shrink:0;transition:.2s}
+.step.active{color:var(--text);background:var(--bg3);border:1px solid var(--border2)}
+.step.active .sn{background:var(--accent);border-color:var(--accent);color:#000}
+.step.done{color:var(--accent)}
+.step.done .sn{background:rgba(0,212,170,.15);border-color:var(--accent);color:var(--accent)}
+.step-div{flex:1;height:1px;background:var(--border);margin:0 4px}
+
+/* ── LAYOUT ── */
+.wrap{max-width:1100px;margin:0 auto;padding:0 32px 80px}
+.section{display:none}
+.section.active{display:block}
+
+/* ── CARDS ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:28px;margin-bottom:20px}
+.card-title{font-size:15px;font-weight:600;margin-bottom:20px;display:flex;align-items:center;gap:8px;color:var(--text)}
+
+/* ── MIGRATION CARDS ── */
+.mig-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.mig-card{border:1.5px solid var(--border);border-radius:var(--rl);padding:20px;cursor:pointer;transition:.2s;background:var(--bg3);position:relative;overflow:hidden}
+.mig-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.mig-card.sel{border-color:var(--accent);background:rgba(0,212,170,.05)}
+.mig-card.sel::after{content:'✓';position:absolute;top:12px;left:12px;width:22px;height:22px;background:var(--accent);border-radius:50%;color:#000;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;line-height:22px;text-align:center}
+/* vendor logos inside cards */
+.mig-vendors{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.vlogo{width:52px;height:52px;border-radius:10px;object-fit:contain;background:#fff;padding:6px;border:1px solid var(--border)}
+.vlogo-placeholder{width:52px;height:52px;border-radius:10px;background:var(--bg2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:24px}
+.arrow-big{font-size:22px;color:var(--accent)}
+.mig-title{font-size:15px;font-weight:700;margin-bottom:6px}
+.mig-desc{font-size:12px;color:var(--text2);line-height:1.6}
+.mig-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+.tag{font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(79,142,247,.12);color:var(--blue);border:1px solid rgba(79,142,247,.3)}
+
+/* ── VERSION PICKER ── */
+.ver-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+.ver-btn{padding:14px 10px;text-align:center;border-radius:var(--r);border:1.5px solid var(--border);background:var(--bg3);cursor:pointer;transition:.2s}
+.ver-btn:hover{border-color:var(--border2)}
+.ver-btn.sel{border-color:var(--accent);background:rgba(0,212,170,.07)}
+.ver-num{font-size:22px;font-weight:700;color:var(--text);margin-bottom:3px}
+.ver-btn.sel .ver-num{color:var(--accent)}
+.ver-label{font-size:10px;color:var(--text3)}
+.ver-btn.sel .ver-label{color:var(--accent2)}
+.ver-badge{display:inline-block;font-size:9px;padding:1px 6px;border-radius:10px;background:rgba(0,212,170,.15);color:var(--accent);margin-top:4px}
+
+/* ── FORM ── */
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.fgrid.g3{grid-template-columns:2fr 1fr 1fr}
+.ffull{grid-column:1/-1}
+.flabel{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;display:block}
+input,select{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:10px 13px;color:var(--text);font-size:13px;font-family:'Courier New',monospace;transition:border-color .2s}
+input:focus,select:focus{outline:none;border-color:var(--accent)}
+input::placeholder{color:var(--text3)}
+select option{background:var(--bg3)}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:4px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:4px;margin-bottom:20px}
+.tab{flex:1;padding:8px 14px;border-radius:6px;border:none;background:transparent;color:var(--text3);font-size:13px;cursor:pointer;transition:.2s;font-weight:500}
+.tab.active{background:var(--surface);color:var(--text);border:1px solid var(--border)}
+.tabcontent{display:none}
+.tabcontent.active{display:block}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border-radius:var(--r);border:none;font-size:14px;font-weight:500;cursor:pointer;transition:.18s;font-family:'Segoe UI',sans-serif}
+.btn-primary{background:var(--accent);color:#000}
+.btn-primary:hover{background:var(--accent2);transform:translateY(-1px)}
+.btn-primary:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.btn-sec{background:var(--bg3);color:var(--text);border:1px solid var(--border)}
+.btn-sec:hover{border-color:var(--border2)}
+.btn-outline{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.btn-outline:hover{background:rgba(0,212,170,.08)}
+.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:20px}
+
+/* ── UPLOAD ── */
+.dropzone{border:2px dashed var(--border);border-radius:var(--rl);padding:44px;text-align:center;cursor:pointer;transition:.2s;background:var(--bg3)}
+.dropzone:hover,.dropzone.over{border-color:var(--accent);background:rgba(0,212,170,.04)}
+.dz-icon{font-size:44px;margin-bottom:12px}
+.dz-text{font-size:14px;color:var(--text2)}
+.dz-hint{font-size:12px;color:var(--text3);margin-top:6px}
+
+/* ── STATS ── */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:14px;text-align:center}
+.stat-n{font-size:30px;font-weight:700;color:var(--accent);line-height:1;margin-bottom:5px}
+.stat-l{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
+
+/* ── STATUS ROWS ── */
+.srow{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:var(--r);background:var(--bg3);border:1px solid var(--border);font-size:13px;margin-bottom:7px}
+.sdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.sdot.ok{background:var(--green);box-shadow:0 0 6px var(--green)}
+.sdot.warn{background:var(--yellow);box-shadow:0 0 6px var(--yellow)}
+.sdot.err{background:var(--red);box-shadow:0 0 6px var(--red)}
+.sdot.info{background:var(--blue);box-shadow:0 0 6px var(--blue)}
+
+/* ── CODE ── */
+.code{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:14px;font-family:'Courier New',monospace;font-size:12px;color:var(--text2);line-height:1.6;max-height:300px;overflow-y:auto;white-space:pre-wrap;word-break:break-all}
+.code::-webkit-scrollbar{width:4px}
+.code::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* ── PROGRESS ── */
+.prog-wrap{background:var(--bg3);border-radius:4px;height:6px;overflow:hidden;margin:12px 0}
+.prog-bar{height:100%;background:linear-gradient(90deg,var(--accent),var(--blue));border-radius:4px;transition:width .4s ease}
+
+/* ── OPTIONS ── */
+.opt-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.opt{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);cursor:pointer;transition:.2s}
+.opt:hover{border-color:var(--border2)}
+.sw{width:36px;height:20px;background:var(--bg);border:1px solid var(--border);border-radius:10px;position:relative;flex-shrink:0;transition:.2s}
+.sw::after{content:'';position:absolute;width:14px;height:14px;background:var(--text3);border-radius:50%;top:2px;left:2px;transition:.2s}
+.opt.on .sw{background:rgba(0,212,170,.15);border-color:var(--accent)}
+.opt.on .sw::after{background:var(--accent);left:18px}
+.opt-label{font-size:12px;color:var(--text2)}
+
+/* ── CONN STATUS ── */
+.connbadge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:500;margin-bottom:14px}
+.connbadge.ok{background:rgba(0,212,170,.1);border:1px solid var(--accent);color:var(--accent)}
+.connbadge.err{background:rgba(255,82,82,.1);border:1px solid var(--red);color:var(--red)}
+
+/* ── DIVIDER ── */
+.divider{height:1px;background:var(--border);margin:20px 0}
+
+/* ── TOAST ── */
+#toasts{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:999;display:flex;flex-direction:column;gap:7px;align-items:center;pointer-events:none}
+.toast{padding:11px 20px;border-radius:var(--r);font-size:13px;font-weight:500;animation:tUp .25s ease;pointer-events:all}
+.toast.ok{background:rgba(0,212,170,.18);border:1px solid var(--accent);color:var(--accent)}
+.toast.err{background:rgba(255,82,82,.15);border:1px solid var(--red);color:var(--red)}
+.toast.info{background:rgba(79,142,247,.15);border:1px solid var(--blue);color:var(--blue)}
+@keyframes tUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── SPINNER ── */
+.spin{display:inline-block;width:15px;height:15px;border:2px solid rgba(0,0,0,.2);border-top-color:#000;border-radius:50%;animation:spin .65s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── SUCCESS SCREEN ── */
+.success-screen{text-align:center;padding:48px 24px}
+.big-icon{font-size:72px;margin-bottom:18px}
+.success-title{font-size:24px;font-weight:700;margin-bottom:8px}
+.success-sub{font-size:14px;color:var(--text2);margin-bottom:32px}
+.success-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+/* ── DEVICE IMAGE in conn card ── */
+.device-banner{display:flex;align-items:center;gap:16px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:14px 18px;margin-bottom:20px}
+.device-img{width:56px;height:56px;border-radius:10px;background:#fff;padding:5px;object-fit:contain;border:1px solid var(--border)}
+.device-img-placeholder{width:56px;height:56px;border-radius:10px;background:var(--bg2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:28px}
+.device-info-name{font-size:15px;font-weight:600;margin-bottom:2px}
+.device-info-sub{font-size:12px;color:var(--text2)}
+
+/* ── WARNING BOX ── */
+.warn-box{background:rgba(255,193,7,.06);border:1px solid rgba(255,193,7,.3);border-radius:var(--r);padding:16px 18px}
+.warn-box-title{font-size:13px;font-weight:600;color:var(--yellow);margin-bottom:8px}
+.warn-box-body{font-size:13px;color:var(--text2);line-height:1.8}
+
+@media(max-width:700px){.mig-grid,.fgrid,.fgrid.g3,.ver-grid,.opt-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">🔥</div>
+    FireWall <span>Migrator</span> Pro
+  </div>
+  <span class="hbadge">v2.0 · FortiGate / CheckPoint</span>
+</header>
+
+<div class="steps-bar">
+  <button class="step active" id="nav1" onclick="goStep(1)"><span class="sn">1</span>סוג מיגרציה</button>
+  <div class="step-div"></div>
+  <button class="step" id="nav2" onclick="goStep(2)"><span class="sn">2</span>חיבור & קונפיג</button>
+  <div class="step-div"></div>
+  <button class="step" id="nav3" onclick="goStep(3)"><span class="sn">3</span>ניתוח</button>
+  <div class="step-div"></div>
+  <button class="step" id="nav4" onclick="goStep(4)"><span class="sn">4</span>המרה</button>
+  <div class="step-div"></div>
+  <button class="step" id="nav5" onclick="goStep(5)"><span class="sn">5</span>הורדה</button>
+</div>
+
+<div class="wrap">
+
+<!-- ══ STEP 1 ══ -->
+<div class="section active" id="step1">
+  <div class="card">
+    <div class="card-title">🔄 בחר סוג מיגרציה</div>
+    <div class="mig-grid">
+
+      <!-- FortiGate → FortiGate -->
+      <div class="mig-card" id="mc-ff" onclick="selectMig('forti_to_forti')">
+        <div class="mig-vendors">
+          <img class="vlogo"
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Fortinet_logo.svg/120px-Fortinet_logo.svg.png"
+            alt="Fortinet" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="vlogo-placeholder" style="display:none">🟠</div>
+          <div class="arrow-big">→</div>
+          <img class="vlogo"
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Fortinet_logo.svg/120px-Fortinet_logo.svg.png"
+            alt="Fortinet" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="vlogo-placeholder" style="display:none">🟠</div>
+        </div>
+        <div class="mig-title">FortiGate → FortiGate</div>
+        <div class="mig-desc">שדרוג קונפיגורציה בין גרסאות FortiOS — מ-6.x ל-7.x, ניקוי deprecated commands, התאמה לsyntax חדש</div>
+        <div class="mig-tags">
+          <span class="tag">6.x → 7.4</span><span class="tag">Deprecated cleanup</span><span class="tag">Policy migration</span>
+        </div>
+      </div>
+
+      <!-- CheckPoint → FortiGate -->
+      <div class="mig-card" id="mc-cf" onclick="selectMig('checkpoint_to_forti')">
+        <div class="mig-vendors">
+          <img class="vlogo"
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Check_Point_logo_2022.svg/120px-Check_Point_logo_2022.svg.png"
+            alt="CheckPoint" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="vlogo-placeholder" style="display:none">🔵</div>
+          <div class="arrow-big">→</div>
+          <img class="vlogo"
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Fortinet_logo.svg/120px-Fortinet_logo.svg.png"
+            alt="Fortinet" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="vlogo-placeholder" style="display:none">🟠</div>
+        </div>
+        <div class="mig-title">CheckPoint → FortiGate</div>
+        <div class="mig-desc">המרה מלאה — Objects, Access Rules, NAT, VPN Communities, Routes — לסינטקס FortiOS</div>
+        <div class="mig-tags">
+          <span class="tag">Objects</span><span class="tag">Access Rules</span><span class="tag">NAT</span><span class="tag">Routes</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="card" id="ver-card" style="display:none">
+    <div class="card-title">📦 גרסת FortiGate יעד</div>
+    <div class="ver-grid">
+      <div class="ver-btn sel" onclick="selVer('7.4',this)">
+        <div class="ver-num">7.4</div>
+        <div class="ver-label">FortiOS 7.4</div>
+        <div class="ver-badge">מומלץ</div>
+      </div>
+      <div class="ver-btn" onclick="selVer('7.2',this)">
+        <div class="ver-num">7.2</div><div class="ver-label">FortiOS 7.2</div>
+      </div>
+      <div class="ver-btn" onclick="selVer('7.0',this)">
+        <div class="ver-num">7.0</div><div class="ver-label">FortiOS 7.0</div>
+      </div>
+      <div class="ver-btn" onclick="selVer('6.4',this)">
+        <div class="ver-num">6.4</div><div class="ver-label">FortiOS 6.4</div>
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--text3)">💡 FortiOS 7.4 — תומך ב-ZTNA, SD-WAN ו-NGFW מלא</div>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" id="btn1next" disabled onclick="goStep(2)">המשך לחיבור ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 2 ══ -->
+<div class="section" id="step2">
+  <!-- device banner -->
+  <div class="device-banner" id="dev-banner">
+    <div class="device-img-placeholder" id="dev-icon">🔌</div>
+    <img id="dev-img" class="device-img" style="display:none" alt="device">
+    <div>
+      <div class="device-info-name" id="dev-name">מכשיר מקור</div>
+      <div class="device-info-sub" id="dev-sub">הכנס פרטי חיבור למטה</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🌐 חיבור למכשיר מקור</div>
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('live')">🔌 חיבור Live SSH</button>
+      <button class="tab" onclick="switchTab('file')">📁 העלאת קובץ קונפיגורציה</button>
+    </div>
+
+    <!-- live tab -->
+    <div class="tabcontent active" id="tab-live">
+      <div class="fgrid g3">
+        <div class="ffull">
+          <label class="flabel">Gateway IP / Hostname</label>
+          <input id="gw" type="text" placeholder="192.168.1.1  או  fw.company.com">
+        </div>
+        <div>
+          <label class="flabel">שם משתמש</label>
+          <input id="user" type="text" placeholder="admin">
+        </div>
+        <div>
+          <label class="flabel">סיסמה</label>
+          <input id="pass" type="password" placeholder="••••••••">
+        </div>
+        <div>
+          <label class="flabel">SSH Port</label>
+          <input id="port" type="number" value="22" placeholder="22">
+        </div>
+      </div>
+      <div id="connbadge-wrap" style="display:none"></div>
+      <div class="actions">
+        <button class="btn btn-sec" onclick="testConn()">🔍 בדוק חיבור</button>
+        <button class="btn btn-primary" onclick="dlConfig()">⬇️ הורד קונפיגורציה</button>
+      </div>
+    </div>
+
+    <!-- file tab -->
+    <div class="tabcontent" id="tab-file">
+      <div class="dropzone" id="dz"
+        ondragover="event.preventDefault();this.classList.add('over')"
+        ondragleave="this.classList.remove('over')"
+        ondrop="handleDrop(event)"
+        onclick="document.getElementById('fi').click()">
+        <div class="dz-icon">📄</div>
+        <div class="dz-text">גרור קובץ קונפיגורציה לכאן</div>
+        <div class="dz-hint">.conf · .cfg · .txt · .json — לחץ לבחירה ידנית</div>
+      </div>
+      <input type="file" id="fi" style="display:none" accept=".conf,.cfg,.txt,.json" onchange="uploadFile(this)">
+      <div id="file-status" style="margin-top:12px;font-size:13px"></div>
+    </div>
+  </div>
+
+  <!-- config summary (after download) -->
+  <div class="card" id="cfg-summary" style="display:none">
+    <div class="card-title">📊 קונפיגורציה שהורדה</div>
+    <div class="stats-grid" id="cfg-stats"></div>
+    <div class="divider"></div>
+    <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text2)">תצוגה מקדימה</div>
+    <div class="code" id="cfg-preview"></div>
+  </div>
+
+  <div class="actions" id="step2-next" style="display:none">
+    <button class="btn btn-sec" onclick="goStep(1)">← חזרה</button>
+    <button class="btn btn-primary" onclick="goStep(3)">המשך לניתוח ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 3 ══ -->
+<div class="section" id="step3">
+  <div class="card">
+    <div class="card-title">🔬 ניתוח קונפיגורציה</div>
+    <div id="ana-load" style="text-align:center;padding:36px;color:var(--text2)">
+      <div style="font-size:36px;margin-bottom:12px">⏳</div>מנתח...
+    </div>
+    <div id="ana-results" style="display:none">
+      <div id="ana-info"></div>
+      <div id="ana-warn" style="display:none">
+        <div class="divider"></div>
+        <div style="font-size:13px;font-weight:600;color:var(--yellow);margin-bottom:8px">⚠️ אזהרות</div>
+        <div id="ana-warn-list"></div>
+      </div>
+      <div id="ana-err" style="display:none">
+        <div class="divider"></div>
+        <div style="font-size:13px;font-weight:600;color:var(--red);margin-bottom:8px">❌ שגיאות</div>
+        <div id="ana-err-list"></div>
+      </div>
+    </div>
+  </div>
+  <div class="actions">
+    <button class="btn btn-sec" onclick="goStep(2)">← חזרה</button>
+    <button class="btn btn-primary" onclick="goStep(4)">המשך להמרה ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 4 ══ -->
+<div class="section" id="step4">
+  <div class="card">
+    <div class="card-title">⚙️ אפשרויות המרה</div>
+    <div class="opt-grid">
+      <div class="opt on" id="opt-log" onclick="this.classList.toggle('on')">
+        <div class="sw"></div><div class="opt-label">הוסף logging לכל הפוליסות</div>
+      </div>
+      <div class="opt on" id="opt-nat" onclick="this.classList.toggle('on')">
+        <div class="sw"></div><div class="opt-label">המר חוקי NAT</div>
+      </div>
+      <div class="opt" id="opt-vpn" onclick="this.classList.toggle('on')">
+        <div class="sw"></div><div class="opt-label">המר VPN Communities</div>
+      </div>
+      <div class="opt on" id="opt-routes" onclick="this.classList.toggle('on')">
+        <div class="sw"></div><div class="opt-label">המר Static Routes</div>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-primary" id="btn-convert" onclick="runConvert()">🚀 הרץ המרה</button>
+    </div>
+  </div>
+
+  <div class="card" id="conv-prog" style="display:none">
+    <div class="card-title">🔄 ממיר...</div>
+    <div class="prog-wrap"><div class="prog-bar" id="pbar" style="width:0%"></div></div>
+    <div id="pmsg" style="font-size:12px;color:var(--text2);margin-top:8px">מתחיל...</div>
+  </div>
+
+  <div class="card" id="conv-result" style="display:none">
+    <div class="card-title">✅ המרה הושלמה בהצלחה</div>
+    <div class="stats-grid" id="conv-stats"></div>
+    <div id="conv-warn" style="display:none;margin-top:14px">
+      <div style="font-size:13px;color:var(--yellow);margin-bottom:8px">⚠️ הערות</div>
+      <div id="conv-warn-list"></div>
+    </div>
+    <div class="divider"></div>
+    <div style="font-size:13px;font-weight:600;margin-bottom:8px;color:var(--text2)">תצוגה מקדימה</div>
+    <div class="code" id="conv-preview"></div>
+  </div>
+
+  <div class="actions" id="step4-next" style="display:none">
+    <button class="btn btn-sec" onclick="goStep(3)">← חזרה</button>
+    <button class="btn btn-primary" onclick="goStep(5)">הורדה ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 5 ══ -->
+<div class="section" id="step5">
+  <div class="card">
+    <div class="success-screen">
+      <div class="big-icon">🎉</div>
+      <div class="success-title">המיגרציה הושלמה!</div>
+      <div class="success-sub">קובץ ה-.conf מוכן — ייבא אותו ישירות ל-FortiGate</div>
+      <div class="success-btns">
+        <button class="btn btn-primary" onclick="downloadOutput()">⬇️ הורד קובץ .conf</button>
+        <button class="btn btn-outline" onclick="toggleFullCfg()">👁️ הצג קונפיגורציה מלאה</button>
+        <button class="btn btn-sec" onclick="startOver()">🔁 מיגרציה חדשה</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="fullcfg-card" style="display:none">
+    <div class="card-title">📄 קונפיגורציה מלאה</div>
+    <div class="code" id="fullcfg-code" style="max-height:500px"></div>
+  </div>
+
+  <div class="warn-box">
+    <div class="warn-box-title">⚠️ לפני יישום בProduction</div>
+    <div class="warn-box-body">
+      1. בדוק את הקובץ ביסודיות לפני הטמעה<br>
+      2. בצע ייבוא בסביבת LAB תחילה<br>
+      3. אמת VPN tunnels ו-PSK ידנית<br>
+      4. בדוק חוקי NAT ו-routing לאחר ההטמעה<br>
+      5. שמור backup של הקונפיגורציה המקורית
+    </div>
+  </div>
+</div>
+
+</div><!-- /wrap -->
+<div id="toasts"></div>
+
+<script>
+const API = '';
+const S = {step:1, migType:null, version:'7.4', configId:null, outputId:null};
+
+// ── NAVIGATION ──
+function goStep(n){
+  if(n>1 && !S.migType){ toast('בחר סוג מיגרציה תחילה','err'); return; }
+  if(n>2 && !S.configId){ toast('יש להוריד קונפיגורציה תחילה','err'); return; }
+  S.step = n;
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('step'+n).classList.add('active');
+  document.querySelectorAll('.step').forEach((b,i)=>{
+    b.classList.remove('active','done');
+    if(i+1<n) b.classList.add('done');
+    if(i+1===n) b.classList.add('active');
+  });
+  if(n===3) runAnalysis();
+}
+
+// ── MIGRATION TYPE ──
+const VENDOR_IMGS = {
+  fortigate: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Fortinet_logo.svg/120px-Fortinet_logo.svg.png',
+  checkpoint: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Check_Point_logo_2022.svg/120px-Check_Point_logo_2022.svg.png'
+};
+
+function selectMig(type){
+  S.migType = type;
+  document.querySelectorAll('.mig-card').forEach(c=>c.classList.remove('sel'));
+  document.getElementById(type==='forti_to_forti'?'mc-ff':'mc-cf').classList.add('sel');
+  document.getElementById('ver-card').style.display='block';
+  document.getElementById('btn1next').disabled=false;
+
+  // Update device banner
+  const isFF = type==='forti_to_forti';
+  document.getElementById('dev-name').textContent = isFF ? 'FortiGate מקור' : 'CheckPoint Gateway';
+  document.getElementById('dev-sub').textContent = isFF
+    ? 'מכשיר FortiGate קיים — חיבור SSH או קובץ קונפיגורציה'
+    : 'CheckPoint Security Gateway — חיבור SSH או קובץ database';
+  const img = document.getElementById('dev-img');
+  const icon = document.getElementById('dev-icon');
+  const src = isFF ? VENDOR_IMGS.fortigate : VENDOR_IMGS.checkpoint;
+  img.src = src;
+  img.style.display='block'; icon.style.display='none';
+  img.onerror=()=>{ img.style.display='none'; icon.style.display='flex'; icon.textContent=isFF?'🟠':'🔵'; };
+}
+
+function selVer(v, el){
+  S.version = v;
+  document.querySelectorAll('.ver-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+// ── TABS ──
+function switchTab(tab){
+  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active',(i===0&&tab==='live')||(i===1&&tab==='file')));
+  document.querySelectorAll('.tabcontent').forEach((c,i)=>c.classList.toggle('active',(i===0&&tab==='live')||(i===1&&tab==='file')));
+}
+
+// ── CONNECTION ──
+async function testConn(){
+  const [gw,user,pass,port] = ['gw','user','pass','port'].map(id=>document.getElementById(id).value.trim());
+  if(!gw||!user||!pass){ toast('מלא את כל שדות החיבור','err'); return; }
+  toast('בודק חיבור...','info');
+  try{
+    const r = await fetch(`${API}/api/test-connection`,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({source_type:S.migType==='forti_to_forti'?'fortigate':'checkpoint',gateway:gw,username:user,password:pass,port})});
+    const d = await r.json();
+    const wrap = document.getElementById('connbadge-wrap');
+    wrap.style.display='block';
+    wrap.innerHTML = `<div class="connbadge ${d.success?'ok':'err'}">
+      <span class="sdot ${d.success?'ok':'err'}"></span>
+      ${d.success ? '✓ '+d.message : '✗ '+d.error}
+    </div>`;
+    toast(d.success?'חיבור הצליח!':'חיבור נכשל: '+d.error, d.success?'ok':'err');
+  }catch(e){ toast('שגיאת רשת: '+e.message,'err'); }
+}
+
+async function dlConfig(){
+  const [gw,user,pass,port] = ['gw','user','pass','port'].map(id=>document.getElementById(id).value.trim());
+  if(!gw||!user||!pass){ toast('מלא את כל שדות החיבור','err'); return; }
+  const btn = event.target; btn.disabled=true; btn.innerHTML='<span class="spin"></span> מוריד...';
+  try{
+    const r = await fetch(`${API}/api/download-config`,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({source_type:S.migType==='forti_to_forti'?'fortigate':'checkpoint',gateway:gw,username:user,password:pass,port})});
+    const d = await r.json();
+    if(d.success){ S.configId=d.config_id; showCfgSummary(d.summary,d.raw_preview); toast('קונפיגורציה הורדה!','ok'); }
+    else toast('שגיאה: '+d.error,'err');
+  }catch(e){ toast('שגיאה: '+e.message,'err'); }
+  finally{ btn.disabled=false; btn.innerHTML='⬇️ הורד קונפיגורציה'; }
+}
+
+async function uploadFile(input){
+  if(!input.files[0]) return;
+  const fd = new FormData();
+  fd.append('file',input.files[0]);
+  fd.append('source_type',S.migType==='forti_to_forti'?'fortigate':'checkpoint');
+  document.getElementById('file-status').innerHTML='<span style="color:var(--text2)">⏳ מעלה...</span>';
+  try{
+    const r = await fetch(`${API}/api/upload-config`,{method:'POST',body:fd});
+    const d = await r.json();
+    if(d.success){ S.configId=d.config_id; document.getElementById('file-status').innerHTML=`<span style="color:var(--accent)">✓ ${input.files[0].name}</span>`; showCfgSummary(d.summary,d.raw_preview); toast('קובץ הועלה!','ok'); }
+    else{ document.getElementById('file-status').innerHTML=`<span style="color:var(--red)">✗ ${d.error}</span>`; toast('שגיאה: '+d.error,'err'); }
+  }catch(e){ toast('שגיאה: '+e.message,'err'); }
+}
+
+async function handleDrop(e){
+  e.preventDefault(); document.getElementById('dz').classList.remove('over');
+  const f = e.dataTransfer.files[0]; if(f){ document.getElementById('fi').files; await uploadFromFile(f); }
+}
+
+async function uploadFromFile(file){
+  const fd = new FormData(); fd.append('file',file); fd.append('source_type',S.migType==='forti_to_forti'?'fortigate':'checkpoint');
+  try{
+    const r = await fetch(`${API}/api/upload-config`,{method:'POST',body:fd});
+    const d = await r.json();
+    if(d.success){ S.configId=d.config_id; showCfgSummary(d.summary,d.raw_preview); toast('קובץ הועלה!','ok'); }
+    else toast('שגיאה: '+d.error,'err');
+  }catch(e){ toast('שגיאה: '+e.message,'err'); }
+}
+
+function showCfgSummary(summary, preview){
+  document.getElementById('cfg-summary').style.display='block';
+  const items=[['פוליסות',summary.policies||0],['ממשקים',summary.interfaces||0],
+    ['כתובות',summary.addresses||0],['שירותים',summary.services||0],
+    ['Routes',summary.routes||0],['VPN',summary.vpn_tunnels||summary.vpn_communities||0]];
+  document.getElementById('cfg-stats').innerHTML=items.map(([l,v])=>
+    `<div class="stat"><div class="stat-n">${v}</div><div class="stat-l">${l}</div></div>`).join('');
+  document.getElementById('cfg-preview').textContent=preview||'—';
+  document.getElementById('step2-next').style.display='flex';
+}
+
+// ── ANALYSIS ──
+async function runAnalysis(){
+  if(!S.configId) return;
+  document.getElementById('ana-load').style.display='block';
+  document.getElementById('ana-results').style.display='none';
+  try{
+    const r = await fetch(`${API}/api/analyze-config`,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({config_id:S.configId,migration_type:S.migType})});
+    const d = await r.json();
+    document.getElementById('ana-load').style.display='none';
+    document.getElementById('ana-results').style.display='block';
+    if(d.success){
+      const {info,warnings,errors} = d.analysis;
+      document.getElementById('ana-info').innerHTML=(info||[]).map(i=>`<div class="srow"><span class="sdot info"></span>${i}</div>`).join('');
+      if(warnings?.length){ document.getElementById('ana-warn').style.display='block'; document.getElementById('ana-warn-list').innerHTML=warnings.map(w=>`<div class="srow"><span class="sdot warn"></span>${w}</div>`).join(''); }
+      if(errors?.length){ document.getElementById('ana-err').style.display='block'; document.getElementById('ana-err-list').innerHTML=errors.map(e=>`<div class="srow"><span class="sdot err"></span>${e}</div>`).join(''); }
+    }
+  }catch(e){ document.getElementById('ana-load').innerHTML=`<div style="color:var(--red)">שגיאה: ${e.message}</div>`; }
+}
+
+// ── CONVERSION ──
+async function runConvert(){
+  const btn=document.getElementById('btn-convert');
+  btn.disabled=true; btn.innerHTML='<span class="spin"></span> ממיר...';
+  document.getElementById('conv-prog').style.display='block';
+  const bar=document.getElementById('pbar'), msg=document.getElementById('pmsg');
+  const steps=[[20,'קורא קונפיגורציה...'],[40,'מנתח אובייקטים...'],[60,'ממיר פוליסות...'],[80,'מייצר FortiOS config...'],[95,'מאמת...']];
+  for(const [p,t] of steps){ bar.style.width=p+'%'; msg.textContent=t; await sleep(280); }
+  const opts={add_logging:document.getElementById('opt-log').classList.contains('on'),
+    convert_nat:document.getElementById('opt-nat').classList.contains('on'),
+    convert_vpn:document.getElementById('opt-vpn').classList.contains('on'),
+    convert_routes:document.getElementById('opt-routes').classList.contains('on')};
+  try{
+    const r=await fetch(`${API}/api/convert-config`,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({config_id:S.configId,migration_type:S.migType,target_version:S.version,options:opts})});
+    const d=await r.json();
+    bar.style.width='100%'; msg.textContent='הושלם!';
+    if(d.success){
+      S.outputId=d.output_id;
+      showConvResult(d.stats,d.warnings,d.config_preview);
+      toast('המרה הושלמה!','ok');
+    } else toast('שגיאה: '+d.error,'err');
+  }catch(e){ toast('שגיאה: '+e.message,'err'); }
+  finally{ btn.disabled=false; btn.innerHTML='🚀 הרץ המרה'; }
+}
+
+function showConvResult(stats,warnings,preview){
+  document.getElementById('conv-result').style.display='block';
+  const items=[['פוליסות',stats.policies_converted||0],['כתובות',stats.addresses_converted||0],
+    ['שירותים',stats.services_converted||0],['Routes',stats.routes_converted||0],
+    ['ממשקים',stats.interfaces_converted||0],['VPN',stats.vpn_tunnels||0]];
+  document.getElementById('conv-stats').innerHTML=items.map(([l,v])=>
+    `<div class="stat"><div class="stat-n">${v}</div><div class="stat-l">${l}</div></div>`).join('');
+  if(warnings?.length){ document.getElementById('conv-warn').style.display='block'; document.getElementById('conv-warn-list').innerHTML=warnings.map(w=>`<div class="srow" style="margin-bottom:4px"><span class="sdot warn"></span>${w}</div>`).join(''); }
+  document.getElementById('conv-preview').textContent=preview||'';
+  document.getElementById('step4-next').style.display='flex';
+}
+
+// ── DOWNLOAD ──
+async function downloadOutput(){
+  if(!S.outputId){ toast('אין קובץ','err'); return; }
+  window.location.href=`${API}/api/download-output/${S.outputId}`;
+  toast('הורדה התחילה!','ok');
+}
+
+async function toggleFullCfg(){
+  const card=document.getElementById('fullcfg-card');
+  if(card.style.display==='block'){ card.style.display='none'; return; }
+  if(!S.outputId) return;
+  const r=await fetch(`${API}/api/download-output/${S.outputId}`);
+  document.getElementById('fullcfg-code').textContent=await r.text();
+  card.style.display='block';
+}
+
+// ── UTIL ──
+function startOver(){ Object.assign(S,{step:1,migType:null,version:'7.4',configId:null,outputId:null}); goStep(1); document.querySelectorAll('.mig-card').forEach(c=>c.classList.remove('sel')); document.getElementById('ver-card').style.display='none'; document.getElementById('btn1next').disabled=true; document.getElementById('cfg-summary').style.display='none'; document.getElementById('step2-next').style.display='none'; }
+function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+function toast(msg,type='info'){
+  const c=document.getElementById('toasts'), t=document.createElement('div');
+  t.className=`toast ${type}`; t.textContent=msg; c.appendChild(t);
+  setTimeout(()=>t.remove(),3200);
+}
+</script>
+</body>
+</html>
