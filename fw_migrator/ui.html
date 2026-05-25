@@ -265,24 +265,49 @@ select option{background:var(--bg3)}
   </div>
 
   <div class="card" id="ver-card" style="display:none">
-    <div class="card-title">📦 גרסת FortiGate יעד</div>
-    <div class="ver-grid">
-      <div class="ver-btn sel" onclick="selVer('7.4',this)">
-        <div class="ver-num">7.4</div>
-        <div class="ver-label">FortiOS 7.4</div>
-        <div class="ver-badge">מומלץ</div>
-      </div>
-      <div class="ver-btn" onclick="selVer('7.2',this)">
-        <div class="ver-num">7.2</div><div class="ver-label">FortiOS 7.2</div>
-      </div>
-      <div class="ver-btn" onclick="selVer('7.0',this)">
-        <div class="ver-num">7.0</div><div class="ver-label">FortiOS 7.0</div>
-      </div>
-      <div class="ver-btn" onclick="selVer('6.4',this)">
-        <div class="ver-num">6.4</div><div class="ver-label">FortiOS 6.4</div>
+    <div class="card-title">📦 הגדרות מיגרציה</div>
+
+    <!-- Source version (forti only) -->
+    <div id="src-ver-section">
+      <div style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">גרסת המקור (FortiOS)</div>
+      <div class="ver-grid" id="src-ver-grid">
+        <div class="ver-btn" onclick="selSrcVer('6.0',this)"><div class="ver-num">6.0</div><div class="ver-label">FortiOS 6.0</div></div>
+        <div class="ver-btn" onclick="selSrcVer('6.2',this)"><div class="ver-num">6.2</div><div class="ver-label">FortiOS 6.2</div></div>
+        <div class="ver-btn sel" onclick="selSrcVer('6.4',this)"><div class="ver-num">6.4</div><div class="ver-label">FortiOS 6.4</div></div>
+        <div class="ver-btn" onclick="selSrcVer('7.0',this)"><div class="ver-num">7.0</div><div class="ver-label">FortiOS 7.0</div></div>
+        <div class="ver-btn" onclick="selSrcVer('7.2',this)"><div class="ver-num">7.2</div><div class="ver-label">FortiOS 7.2</div></div>
+        <div class="ver-btn" onclick="selSrcVer('7.4',this)"><div class="ver-num">7.4</div><div class="ver-label">FortiOS 7.4</div></div>
+        <div class="ver-btn" onclick="selSrcVer('auto',this)"><div class="ver-num" style="font-size:14px">AUTO</div><div class="ver-label">זיהוי אוטומטי</div><div class="ver-badge">מומלץ</div></div>
       </div>
     </div>
-    <div style="font-size:12px;color:var(--text3)">💡 FortiOS 7.4 — תומך ב-ZTNA, SD-WAN ו-NGFW מלא</div>
+
+    <div class="divider"></div>
+
+    <!-- Target version -->
+    <div style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">גרסת היעד (FortiOS)</div>
+    <div class="ver-grid" id="tgt-ver-grid">
+      <div class="ver-btn" onclick="selVer('6.2',this)"><div class="ver-num">6.2</div><div class="ver-label">FortiOS 6.2</div></div>
+      <div class="ver-btn" onclick="selVer('6.4',this)"><div class="ver-num">6.4</div><div class="ver-label">FortiOS 6.4</div></div>
+      <div class="ver-btn" onclick="selVer('7.0',this)"><div class="ver-num">7.0</div><div class="ver-label">FortiOS 7.0</div></div>
+      <div class="ver-btn" onclick="selVer('7.2',this)"><div class="ver-num">7.2</div><div class="ver-label">FortiOS 7.2</div></div>
+      <div class="ver-btn sel" onclick="selVer('7.4',this)"><div class="ver-num">7.4</div><div class="ver-label">FortiOS 7.4</div><div class="ver-badge">עדכני</div></div>
+      <div class="ver-btn" onclick="selVer('7.6',this)"><div class="ver-num">7.6</div><div class="ver-label">FortiOS 7.6</div></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Target model -->
+    <div style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">מודל היעד</div>
+    <div class="ver-grid" style="grid-template-columns:repeat(4,1fr)">
+      <div class="ver-btn sel" onclick="selModel('Same as source',this)"><div class="ver-num" style="font-size:13px">זהה</div><div class="ver-label">Same as source</div><div class="ver-badge">ברירת מחדל</div></div>
+      <div class="ver-btn" onclick="selModel('FortiGate-40F',this)"><div class="ver-num" style="font-size:14px">40F</div><div class="ver-label">FortiGate-40F</div></div>
+      <div class="ver-btn" onclick="selModel('FortiGate-60E',this)"><div class="ver-num" style="font-size:14px">60E</div><div class="ver-label">FortiGate-60E</div></div>
+      <div class="ver-btn" onclick="selModel('FortiGate-60F',this)"><div class="ver-num" style="font-size:14px">60F</div><div class="ver-label">FortiGate-60F</div></div>
+      <div class="ver-btn" onclick="selModel('FortiGate-80F',this)"><div class="ver-num" style="font-size:14px">80F</div><div class="ver-label">FortiGate-80F</div></div>
+      <div class="ver-btn" onclick="selModel('FortiGate-100F',this)"><div class="ver-num" style="font-size:14px">100F</div><div class="ver-label">FortiGate-100F</div></div>
+      <div class="ver-btn" onclick="selModel('FortiGate-200F',this)"><div class="ver-num" style="font-size:14px">200F</div><div class="ver-label">FortiGate-200F</div></div>
+      <div class="ver-btn" onclick="selModel('FortiGate-VM',this)"><div class="ver-num" style="font-size:14px">VM</div><div class="ver-label">FortiGate-VM</div></div>
+    </div>
   </div>
 
   <div class="actions">
@@ -478,7 +503,7 @@ select option{background:var(--bg3)}
 
 <script>
 const API = '';
-const S = {step:1, migType:null, version:'7.4', configId:null, outputId:null};
+const S = {step:1, migType:null, version:'7.4', srcVersion:'auto', targetModel:'Same as source', configId:null, outputId:null};
 
 // ── NAVIGATION ──
 function goStep(n){
@@ -510,6 +535,7 @@ function selectMig(type){
 
   // Update device banner
   const isFF = type==='forti_to_forti';
+  document.getElementById('src-ver-section').style.display = isFF ? 'block' : 'none';
   document.getElementById('dev-name').textContent = isFF ? 'FortiGate מקור' : 'CheckPoint Gateway';
   document.getElementById('dev-sub').textContent = isFF
     ? 'מכשיר FortiGate קיים — חיבור SSH או קובץ קונפיגורציה'
@@ -524,7 +550,18 @@ function selectMig(type){
 
 function selVer(v, el){
   S.version = v;
-  document.querySelectorAll('.ver-btn').forEach(b=>b.classList.remove('sel'));
+  document.querySelectorAll('#tgt-ver-grid .ver-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+}
+function selSrcVer(v, el){
+  S.srcVersion = v;
+  document.querySelectorAll('#src-ver-grid .ver-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+}
+function selModel(m, el){
+  S.targetModel = m;
+  document.querySelectorAll('#tgt-ver-grid').forEach(()=>{});
+  el.closest('.ver-grid').querySelectorAll('.ver-btn').forEach(b=>b.classList.remove('sel'));
   el.classList.add('sel');
 }
 
@@ -641,7 +678,7 @@ async function runConvert(){
     convert_routes:document.getElementById('opt-routes').classList.contains('on')};
   try{
     const r=await fetch(`${API}/api/convert-config`,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({config_id:S.configId,migration_type:S.migType,target_version:S.version,options:opts})});
+      body:JSON.stringify({config_id:S.configId,migration_type:S.migType,target_version:S.version,target_model:S.targetModel,source_version:S.srcVersion==='auto'?null:S.srcVersion,options:opts})});
     const d=await r.json();
     bar.style.width='100%'; msg.textContent='הושלם!';
     if(d.success){
@@ -682,7 +719,7 @@ async function toggleFullCfg(){
 }
 
 // ── UTIL ──
-function startOver(){ Object.assign(S,{step:1,migType:null,version:'7.4',configId:null,outputId:null}); goStep(1); document.querySelectorAll('.mig-card').forEach(c=>c.classList.remove('sel')); document.getElementById('ver-card').style.display='none'; document.getElementById('btn1next').disabled=true; document.getElementById('cfg-summary').style.display='none'; document.getElementById('step2-next').style.display='none'; }
+function startOver(){ Object.assign(S,{step:1,migType:null,version:'7.4',srcVersion:'auto',targetModel:'Same as source',configId:null,outputId:null}); goStep(1); document.querySelectorAll('.mig-card').forEach(c=>c.classList.remove('sel')); document.getElementById('ver-card').style.display='none'; document.getElementById('btn1next').disabled=true; document.getElementById('cfg-summary').style.display='none'; document.getElementById('step2-next').style.display='none'; }
 function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
 function toast(msg,type='info'){
   const c=document.getElementById('toasts'), t=document.createElement('div');
