@@ -184,6 +184,8 @@ def convert_config():
     cfg_id         = data.get('config_id', '')
     migration_type = data.get('migration_type', '')
     target_version = data.get('target_version', '7.4')
+    target_model   = data.get('target_model', 'Same as source')
+    source_version = data.get('source_version', None)
     options        = data.get('options', {})
 
     cfg_path = os.path.join(UPLOAD_FOLDER, f'{cfg_id}.json')
@@ -197,7 +199,12 @@ def convert_config():
         if migration_type == 'checkpoint_to_forti':
             converter = CheckpointToFortiConverter(target_version=target_version, options=options)
         elif migration_type == 'forti_to_forti':
-            converter = FortiToFortiConverter(target_version=target_version, options=options)
+            converter = FortiToFortiConverter(
+                target_version=target_version,
+                target_model=target_model,
+                source_version=source_version,
+                options=options
+            )
         else:
             return jsonify({'success': False, 'error': 'Unknown migration type'})
 
